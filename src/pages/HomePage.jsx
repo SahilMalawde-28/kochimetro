@@ -7,7 +7,6 @@ import { Card, CardDescription, CardHeader, CardTitle } from "../components/ui/c
 import { Badge } from "../components/ui/badge"
 import {
   Upload,
-  Shield,
   MessageSquare,
   Globe,
   Mic,
@@ -21,6 +20,8 @@ import {
   Users,
   Building,
   Star,
+  Folder,
+  Layers,
 } from "lucide-react"
 import { Link } from "react-router-dom"
 import { AnimatedCounter } from "../components/AnimatedCounter"
@@ -52,39 +53,39 @@ const itemVariants = {
 const features = [
   {
     icon: Brain,
-    title: "Smart Document Analysis",
-    description: "Advanced AI models analyze legal documents with precision and extract key insights automatically.",
+    title: "AI-Powered Summaries",
+    description: "Get instant, accurate summaries of engineering drawings, HR policies, invoices, and reports.",
     color: "bg-blue-50 text-blue-600",
   },
   {
-    icon: Shield,
-    title: "Risk Assessment",
-    description: "Comprehensive risk analysis with color-coded indicators and detailed recommendations.",
-    color: "bg-red-50 text-red-600",
-  },
-  {
-    icon: MessageSquare,
-    title: "Negotiation Assistant",
-    description: "AI-powered suggestions for better terms and professional email drafts for negotiations.",
+    icon: Folder,
+    title: "Smart Document Search",
+    description: "Search across thousands of documents instantly with keyword and context-based results.",
     color: "bg-green-50 text-green-600",
   },
   {
-    icon: Globe,
-    title: "Multilingual Support",
-    description: "Translate and simplify legal clauses in multiple languages for global understanding.",
+    icon: Layers,
+    title: "Department-wise Organization",
+    description: "Easily filter and group documents by Engineering, Procurement, HR, or Operations.",
     color: "bg-purple-50 text-purple-600",
+  },
+  {
+    icon: Globe,
+    title: "Bilingual Support",
+    description: "Access documents in both English and Malayalam with side-by-side translations.",
+    color: "bg-orange-50 text-orange-600",
   },
   {
     icon: Mic,
     title: "Voice Q&A",
-    description: "Ask questions about your documents using voice input and get instant AI-powered answers.",
-    color: "bg-orange-50 text-orange-600",
+    description: "Ask questions about policies or reports using voice and get quick, accurate answers.",
+    color: "bg-teal-50 text-teal-600",
   },
   {
     icon: Calendar,
-    title: "Deadline Tracking",
-    description: "Extract obligations and deadlines, sync with your calendar to never miss important dates.",
-    color: "bg-teal-50 text-teal-600",
+    title: "Schedule & Deadlines",
+    description: "Extract maintenance schedules and sync deadlines with team calendars automatically.",
+    color: "bg-pink-50 text-pink-600",
   },
 ]
 
@@ -112,14 +113,14 @@ export default function HomePage() {
             <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center">
               <Brain className="w-6 h-6 text-white" />
             </div>
-            <span className="text-2xl font-bold text-slate-800">LegalMind.AI</span>
+            <span className="text-2xl font-bold text-slate-800">Kochi Metro Docs</span>
           </motion.div>
 
           <nav className="hidden md:flex items-center space-x-8">
             {[
               { name: "Features", href: "/features" },
-              { name: "Pricing", href: "/pricing" },
-              { name: "API", href: "/api" },
+              { name: "Departments", href: "/departments" },
+              { name: "Upload", href: "/upload" },
               { name: "About", href: "/about" },
             ].map((item, index) => (
               <motion.div
@@ -161,7 +162,7 @@ export default function HomePage() {
           >
             <Badge className="mb-6 bg-blue-100 text-blue-700 hover:bg-blue-100 px-4 py-2">
               <Zap className="w-4 h-4 mr-2" />
-              AI-Powered Legal Intelligence
+              AI-Powered Metro Document Hub
             </Badge>
 
             <motion.h1
@@ -170,7 +171,8 @@ export default function HomePage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.8 }}
             >
-              Understand Legal Documents with <span className="text-blue-600">Artificial Intelligence</span>
+              Manage Kochi Metro Documents with{" "}
+              <span className="text-blue-600">Speed & Clarity</span>
             </motion.h1>
 
             <motion.p
@@ -179,8 +181,8 @@ export default function HomePage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.8 }}
             >
-              Simplify complex legal documents, assess risks, and negotiate better terms. Built for freelancers,
-              startups, and SMBs who need legal clarity without the legal fees.
+              Simplify thousands of engineering, HR, procurement, and safety documents into
+              quick, actionable insights for every metro department.
             </motion.p>
 
             <motion.div
@@ -193,7 +195,7 @@ export default function HomePage() {
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                   <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3">
                     <Upload className="w-5 h-5 mr-2" />
-                    Get Started Free
+                    Upload Documents
                     <ArrowRight className="w-5 h-5 ml-2" />
                   </Button>
                 </motion.div>
@@ -229,10 +231,11 @@ export default function HomePage() {
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-4xl font-bold text-slate-800 mb-4">Powerful AI Features for Legal Documents</h2>
+            <h2 className="text-4xl font-bold text-slate-800 mb-4">
+              Powerful Tools for Kochi Metro Staff
+            </h2>
             <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-              From document analysis to negotiation assistance, our AI helps you navigate legal complexity with
-              confidence.
+              From AI summaries to bilingual support, streamline document workflows across departments.
             </p>
           </motion.div>
 
@@ -251,7 +254,9 @@ export default function HomePage() {
                       <feature.icon className="w-6 h-6" />
                     </div>
                     <CardTitle className="text-slate-800 text-xl mb-2">{feature.title}</CardTitle>
-                    <CardDescription className="text-slate-600 leading-relaxed">{feature.description}</CardDescription>
+                    <CardDescription className="text-slate-600 leading-relaxed">
+                      {feature.description}
+                    </CardDescription>
                   </CardHeader>
                 </Card>
               </motion.div>
@@ -270,8 +275,8 @@ export default function HomePage() {
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-4xl font-bold text-slate-800 mb-4">Trusted by Legal Professionals</h2>
-            <p className="text-xl text-slate-600">Join thousands who have transformed their legal workflow</p>
+            <h2 className="text-4xl font-bold text-slate-800 mb-4">Trusted by Metro Staff</h2>
+            <p className="text-xl text-slate-600">Already simplifying work across Kochi Metro departments</p>
           </motion.div>
 
           <motion.div
@@ -282,10 +287,10 @@ export default function HomePage() {
             viewport={{ once: true }}
           >
             {[
-              { number: 50000, suffix: "+", label: "Documents Analyzed", icon: FileText },
-              { number: 99.7, suffix: "%", label: "Accuracy Rate", icon: Shield },
-              { number: 85, suffix: "%", label: "Time Saved", icon: Zap },
-              { number: 5000, suffix: "+", label: "Happy Users", icon: Users },
+              { number: 20000, suffix: "+", label: "Documents Processed", icon: FileText },
+              { number: 12, suffix: "+", label: "Departments Covered", icon: Layers },
+              { number: 80, suffix: "%", label: "Time Saved", icon: Zap },
+              { number: 1500, suffix: "+", label: "Active Users", icon: Users },
             ].map((stat, index) => (
               <motion.div
                 key={index}
@@ -319,8 +324,8 @@ export default function HomePage() {
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-4xl font-bold text-slate-800 mb-4">What Our Users Say</h2>
-            <p className="text-xl text-slate-600">Real feedback from legal professionals and businesses</p>
+            <h2 className="text-4xl font-bold text-slate-800 mb-4">What Staff Members Say</h2>
+            <p className="text-xl text-slate-600">Real feedback from Kochi Metro officials</p>
           </motion.div>
 
           <motion.div
@@ -332,27 +337,27 @@ export default function HomePage() {
           >
             {[
               {
-                name: "Sarah Johnson",
-                role: "Freelance Consultant",
-                company: "Independent",
+                name: "Arun Menon",
+                role: "Station Manager",
+                company: "Kochi Metro",
                 content:
-                  "LegalMind.AI has transformed how I review contracts. What used to take hours now takes minutes, and I catch risks I might have missed.",
+                  "Earlier I had to search through dozens of reports. Now I can instantly get a summary and share it with my team.",
                 rating: 5,
               },
               {
-                name: "Michael Chen",
-                role: "Startup Founder",
-                company: "TechStart Inc.",
+                name: "Divya Nair",
+                role: "Procurement Officer",
+                company: "KMRL",
                 content:
-                  "As a non-lawyer, I was always nervous about legal documents. This platform gives me the confidence to understand and negotiate better terms.",
+                  "Managing invoices and purchase orders is so much easier. The AI categorizes and highlights the important details.",
                 rating: 5,
               },
               {
-                name: "Emily Rodriguez",
-                role: "Small Business Owner",
-                company: "Rodriguez & Co.",
+                name: "Ravi Krishnan",
+                role: "Rolling Stock Engineer",
+                company: "KMRL",
                 content:
-                  "The risk assessment feature is incredible. It highlighted clauses that could have cost us thousands. Worth every penny.",
+                  "The bilingual feature is a game changer. Malayalam documents are finally easy to process side-by-side with English ones.",
                 rating: 5,
               },
             ].map((testimonial, index) => (

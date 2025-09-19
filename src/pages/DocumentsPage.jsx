@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { Button } from "../components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card"
@@ -11,16 +11,12 @@ import {
   Upload,
   Search,
   Filter,
-  MoreHorizontal,
-  AlertTriangle,
   Clock,
-  CheckCircle,
-  Download,
-  Share,
-  Trash2,
-  Eye,
-  Brain,
-  ArrowLeft,
+  X,
+  FileX,
+  Database,
+  Briefcase,
+  Calendar,
 } from "lucide-react"
 import { Link } from "react-router-dom"
 
@@ -28,70 +24,64 @@ import { Link } from "react-router-dom"
 const mockDocuments = [
   {
     id: "1",
-    name: "Service Agreement - TechCorp.pdf",
-    type: "Service Agreement",
+    name: "Maintenance Report - Depot A.pdf",
+    type: "Maintenance Report",
     status: "analyzed",
-    riskScore: 72,
-    uploadDate: "2024-01-15",
+    uploadDate: "2025-01-15",
     size: "2.4 MB",
-    lastModified: "2 hours ago",
+    source: "Email",
+    department: "Engineering",
   },
   {
     id: "2",
-    name: "NDA - StartupXYZ.docx",
-    type: "NDA",
+    name: "Vendor Invoice - SpareParts.xlsx",
+    type: "Invoice",
     status: "processing",
-    riskScore: null,
-    uploadDate: "2024-01-14",
+    uploadDate: "2025-01-14",
     size: "1.2 MB",
-    lastModified: "1 day ago",
+    source: "SharePoint",
+    department: "Procurement",
   },
   {
     id: "3",
-    name: "Employment Contract - Jane Doe.pdf",
-    type: "Employment Contract",
+    name: "HR Policy - Leave Guidelines.pdf",
+    type: "Policy",
     status: "analyzed",
-    riskScore: 45,
-    uploadDate: "2024-01-13",
+    uploadDate: "2025-01-13",
     size: "3.1 MB",
-    lastModified: "2 days ago",
-  },
-  {
-    id: "4",
-    name: "Licensing Agreement - SoftwareCo.pdf",
-    type: "Licensing Agreement",
-    status: "analyzed",
-    riskScore: 89,
-    uploadDate: "2024-01-12",
-    size: "4.7 MB",
-    lastModified: "3 days ago",
-  },
-  {
-    id: "5",
-    name: "Partnership Agreement - ABC Corp.pdf",
-    type: "Partnership Agreement",
-    status: "analyzed",
-    riskScore: 56,
-    uploadDate: "2024-01-11",
-    size: "2.8 MB",
-    lastModified: "4 days ago",
-  },
-  {
-    id: "6",
-    name: "Consulting Agreement - FreelancePro.pdf",
-    type: "Consulting Agreement",
-    status: "error",
-    riskScore: null,
-    uploadDate: "2024-01-10",
-    size: "1.9 MB",
-    lastModified: "5 days ago",
+    source: "WhatsApp",
+    department: "HR",
   },
 ]
 
 export default function DocumentsPage() {
+  const [documents, setDocuments] = useState([])
   const [searchTerm, setSearchTerm] = useState("")
   const [filterType, setFilterType] = useState("all")
-  const [sortBy, setSortBy] = useState("recent")
+  const [statusFilter, setStatusFilter] = useState("all")
+  const [dateFilter, setDateFilter] = useState("all")
+  const [showFilters, setShowFilters] = useState(false)
+
+  const [sourceCounts, setSourceCounts] = useState({})
+  const [departmentCounts, setDepartmentCounts] = useState({})
+
+  useEffect(() => {
+    const storedDocs = JSON.parse(localStorage.getItem("documents")) || mockDocuments
+    setDocuments(storedDocs)
+
+    const sources = storedDocs.reduce((acc, doc) => {
+      acc[doc.source] = (acc[doc.source] || 0) + 1
+      return acc
+    }, {})
+
+    const departments = storedDocs.reduce((acc, doc) => {
+      acc[doc.department] = (acc[doc.department] || 0) + 1
+      return acc
+    }, {})
+
+    setSourceCounts(sources)
+    setDepartmentCounts(departments)
+  }, [])
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -106,304 +96,290 @@ export default function DocumentsPage() {
     }
   }
 
-  const getStatusIcon = (status) => {
-    switch (status) {
-      case "analyzed":
-        return <CheckCircle className="w-4 h-4" />
-      case "processing":
-        return <Clock className="w-4 h-4" />
-      case "error":
-        return <AlertTriangle className="w-4 h-4" />
-      default:
-        return <FileText className="w-4 h-4" />
-    }
-  }
-
-  const getRiskColor = (score) => {
-    if (!score) return "text-slate-400"
-    if (score >= 80) return "text-red-600"
-    if (score >= 60) return "text-yellow-600"
-    return "text-green-600"
-  }
-
-  const filteredDocuments = mockDocuments.filter((doc) => {
+  const filteredDocuments = documents.filter((doc) => {
     const matchesSearch =
       doc.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       doc.type.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesFilter = filterType === "all" || doc.type.toLowerCase().includes(filterType.toLowerCase())
-    return matchesSearch && matchesFilter
+
+    const matchesType =
+      filterType === "all" || doc.type.toLowerCase().includes(filterType.toLowerCase())
+
+    const matchesStatus = statusFilter === "all" || doc.status === statusFilter
+
+    const matchesDate =
+      dateFilter === "all" ||
+      (dateFilter === "today" &&
+        new Date(doc.uploadDate).toDateString() === new Date().toDateString()) ||
+      (dateFilter === "week" &&
+        new Date(doc.uploadDate) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)) ||
+      (dateFilter === "month" &&
+        new Date(doc.uploadDate) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000))
+
+    return matchesSearch && matchesType && matchesStatus && matchesDate
   })
 
+  const clearFilters = () => {
+    setFilterType("all")
+    setStatusFilter("all")
+    setDateFilter("all")
+    setSearchTerm("")
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       {/* Header */}
-      <motion.header
-        className="sticky top-0 z-50 border-b bg-white/80 backdrop-blur-sm"
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ type: "spring", stiffness: 100, damping: 20 }}
-      >
+      <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link to="/" className="flex items-center space-x-3">
-            <motion.div whileHover={{ scale: 1.02 }}>
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center">
-                <Brain className="w-6 h-6 text-white" />
-              </div>
-            </motion.div>
-            <span className="text-2xl font-bold text-slate-800">LegalMind.AI</span>
-          </Link>
-
-          <nav className="hidden md:flex items-center space-x-8">
-            {[
-              { name: "Features", href: "/features" },
-              { name: "Pricing", href: "/pricing" },
-              { name: "API", href: "/api" },
-              { name: "About", href: "/about" },
-            ].map((item, index) => (
-              <motion.div
-                key={item.name}
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <Link
-                  to={item.href}
-                  className="text-slate-600 hover:text-blue-600 transition-colors relative group font-medium"
-                >
-                  {item.name}
-                  <motion.div
-                    className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600"
-                    whileHover={{ width: "100%" }}
-                    transition={{ duration: 0.3 }}
-                  />
-                </Link>
-              </motion.div>
-            ))}
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Link to="/signin">
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white">Dashboard</Button>
-              </Link>
-            </motion.div>
-          </nav>
-        </div>
-      </motion.header>
-
-      {/* Back to Home */}
-      <div className="container mx-auto px-4 py-4">
-        <motion.div whileHover={{ x: -5 }}>
-          <Link to="/" className="flex items-center text-slate-600 hover:text-blue-600 transition-colors">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Home
-          </Link>
-        </motion.div>
-      </div>
-
-      <div className="container mx-auto px-4 py-8 max-w-7xl">
-        {/* Page Header */}
-        <motion.div
-          className="mb-8"
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-        >
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
-            <div>
-              <h1 className="text-4xl font-bold text-slate-800 mb-2">Documents</h1>
-              <p className="text-slate-600">Manage and analyze your legal documents with AI-powered insights.</p>
+          <Link to="/" className="flex items-center space-x-2">
+            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+              <FileText className="w-5 h-5 text-white" />
             </div>
+            <span className="text-xl font-bold text-slate-800">KMRL Docs</span>
+          </Link>
+          <div className="flex items-center space-x-4">
             <Link to="/upload">
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+              <Button className="h-10">
                 <Upload className="w-4 h-4 mr-2" />
                 Upload Document
               </Button>
             </Link>
           </div>
+        </div>
+      </header>
 
-          {/* Stats Cards */}
-          <div className="grid md:grid-cols-4 gap-4">
-            {[
-              { label: "Total Documents", value: mockDocuments.length, color: "text-blue-600" },
-              {
-                label: "Analyzed",
-                value: mockDocuments.filter((d) => d.status === "analyzed").length,
-                color: "text-green-600",
-              },
-              {
-                label: "Processing",
-                value: mockDocuments.filter((d) => d.status === "processing").length,
-                color: "text-yellow-600",
-              },
-              {
-                label: "High Risk",
-                value: mockDocuments.filter((d) => d.riskScore && d.riskScore >= 80).length,
-                color: "text-red-600",
-              },
-            ].map((stat, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1, duration: 0.6 }}
-              >
-                <Card className="border-slate-200">
-                  <CardContent className="p-4">
-                    <div className="text-center">
-                      <div className={`text-2xl font-bold ${stat.color} mb-1`}>{stat.value}</div>
-                      <div className="text-sm text-slate-600">{stat.label}</div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Search and Filter */}
+      <div className="container mx-auto px-4 py-8 max-w-7xl">
+        {/* Page Header */}
         <motion.div
+          className="mb-8"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.6 }}
+          transition={{ duration: 0.6 }}
         >
-          <Card className="border-slate-200 mb-8">
+          <h1 className="text-3xl font-bold text-slate-800 mb-2">Documents</h1>
+          <p className="text-slate-600">
+            Browse, search, and filter Kochi Metro documents by type, source, and department.
+          </p>
+        </motion.div>
+
+        {/* Analytics Cards */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <Card>
             <CardContent className="p-6">
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-slate-600">By Sources</p>
+                  <p className="text-2xl font-bold text-orange-600">
+                    {Object.keys(sourceCounts).length}
+                  </p>
+                </div>
+                <Database className="w-8 h-8 text-orange-600" />
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-slate-600">By Departments</p>
+                  <p className="text-2xl font-bold text-purple-600">
+                    {Object.keys(departmentCounts).length}
+                  </p>
+                </div>
+                <Briefcase className="w-8 h-8 text-purple-600" />
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-slate-600">Total Documents</p>
+                  <p className="text-2xl font-bold text-blue-600">{documents.length}</p>
+                </div>
+                <FileText className="w-8 h-8 text-blue-600" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Search and Filter */}
+        <Card className="mb-6">
+          <CardContent className="p-6">
+            <div className="space-y-4">
+              <div className="flex flex-col sm:flex-row gap-4 items-center">
                 <div className="flex-1 relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
                   <Input
                     placeholder="Search documents..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
+                    className="pl-10 h-12"
                   />
                 </div>
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm">
+                <div className="flex gap-2 items-center">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowFilters(!showFilters)}
+                    className="h-12 px-4"
+                  >
                     <Filter className="w-4 h-4 mr-2" />
-                    Filter
+                    Filters
                   </Button>
-                  <select
-                    value={filterType}
-                    onChange={(e) => setFilterType(e.target.value)}
-                    className="px-3 py-2 border border-slate-300 rounded-md text-sm"
-                  >
-                    <option value="all">All Types</option>
-                    <option value="nda">NDA</option>
-                    <option value="service">Service Agreement</option>
-                    <option value="employment">Employment</option>
-                    <option value="licensing">Licensing</option>
-                    <option value="partnership">Partnership</option>
-                    <option value="consulting">Consulting</option>
-                  </select>
-                  <select
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value)}
-                    className="px-3 py-2 border border-slate-300 rounded-md text-sm"
-                  >
-                    <option value="recent">Most Recent</option>
-                    <option value="name">Name A-Z</option>
-                    <option value="risk">Risk Score</option>
-                    <option value="type">Document Type</option>
-                  </select>
+                  {(filterType !== "all" || statusFilter !== "all" || dateFilter !== "all") && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={clearFilters}
+                      className="h-12 px-4 text-red-600 hover:text-red-700 hover:bg-red-50"
+                    >
+                      <X className="w-4 h-4 mr-2" />
+                      Clear
+                    </Button>
+                  )}
                 </div>
               </div>
-            </CardContent>
-          </Card>
-        </motion.div>
+
+              {showFilters && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-lg border"
+                >
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Document Type
+                    </label>
+                    <select
+                      value={filterType}
+                      onChange={(e) => setFilterType(e.target.value)}
+                      className="w-full h-10 px-3 border border-slate-300 rounded-md text-sm bg-white"
+                    >
+                      <option value="all">All Types</option>
+                      <option value="invoice">Invoice</option>
+                      <option value="report">Maintenance Report</option>
+                      <option value="policy">Policy</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Status
+                    </label>
+                    <select
+                      value={statusFilter}
+                      onChange={(e) => setStatusFilter(e.target.value)}
+                      className="w-full h-10 px-3 border border-slate-300 rounded-md text-sm bg-white"
+                    >
+                      <option value="all">All Status</option>
+                      <option value="analyzed">Analyzed</option>
+                      <option value="processing">Processing</option>
+                      <option value="error">Error</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Upload Date
+                    </label>
+                    <select
+                      value={dateFilter}
+                      onChange={(e) => setDateFilter(e.target.value)}
+                      className="w-full h-10 px-3 border border-slate-300 rounded-md text-sm bg-white"
+                    >
+                      <option value="all">All Dates</option>
+                      <option value="today">Today</option>
+                      <option value="week">This Week</option>
+                      <option value="month">This Month</option>
+                    </select>
+                  </div>
+                </motion.div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Documents List */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.6 }}
-        >
-          <Card className="border-slate-200">
-            <CardHeader>
-              <CardTitle>Your Documents</CardTitle>
-              <CardDescription>
-                {filteredDocuments.length} of {mockDocuments.length} documents
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {filteredDocuments.map((doc, index) => (
-                  <motion.div
-                    key={doc.id}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.05, duration: 0.4 }}
-                    whileHover={{ y: -2 }}
-                    className="flex items-center justify-between p-4 border border-slate-200 rounded-lg hover:bg-slate-50 transition-all duration-200"
-                  >
-                    <div className="flex items-center space-x-4">
-                      <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <FileText className="w-6 h-6 text-blue-600" />
-                      </div>
-                      <div>
-                        <h3 className="font-medium text-slate-800 mb-1">{doc.name}</h3>
-                        <div className="flex items-center space-x-4 text-sm text-slate-600">
-                          <Badge variant="secondary" className="text-xs">
-                            {doc.type}
-                          </Badge>
-                          <Badge className={`text-xs ${getStatusColor(doc.status)}`}>
-                            {getStatusIcon(doc.status)}
-                            <span className="ml-1 capitalize">{doc.status}</span>
-                          </Badge>
-                          <span>{doc.size}</span>
-                          <span>Modified {doc.lastModified}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center space-x-4">
-                      {doc.riskScore && (
-                        <div className="text-right">
-                          <div className={`text-sm font-medium ${getRiskColor(doc.riskScore)}`}>
-                            Risk: {doc.riskScore}/100
-                          </div>
-                        </div>
-                      )}
-                      <div className="flex items-center space-x-2">
-                        {doc.status === "analyzed" ? (
-                          <Link to={`/analysis/${doc.id}`}>
-                            <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
-                              <Eye className="w-4 h-4 mr-1" />
-                              View
-                            </Button>
-                          </Link>
-                        ) : doc.status === "processing" ? (
-                          <Button size="sm" variant="outline" disabled>
-                            <Clock className="w-4 h-4 mr-1" />
-                            Processing
-                          </Button>
-                        ) : (
-                          <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50">
-                            <AlertTriangle className="w-4 h-4 mr-1" />
-                            Error
-                          </Button>
-                        )}
-
-                        <div className="flex items-center space-x-1">
-                          <Button size="sm" variant="ghost" className="p-2">
-                            <Download className="w-4 h-4" />
-                          </Button>
-                          <Button size="sm" variant="ghost" className="p-2">
-                            <Share className="w-4 h-4" />
-                          </Button>
-                          <Button size="sm" variant="ghost" className="p-2 text-red-600 hover:bg-red-50">
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                          <Button size="sm" variant="ghost" className="p-2">
-                            <MoreHorizontal className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>All Documents</CardTitle>
+                <CardDescription>
+                  Browse {filteredDocuments.length} of {documents.length} documents
+                </CardDescription>
               </div>
-            </CardContent>
-          </Card>
-        </motion.div>
+              {filteredDocuments.length !== documents.length && (
+                <Badge variant="secondary">
+                  Filtered: {filteredDocuments.length}/{documents.length}
+                </Badge>
+              )}
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {filteredDocuments.map((file) => (
+                <div
+                  key={file.id}
+                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-slate-50 transition-colors"
+                >
+                  <div className="flex items-center space-x-4 flex-1">
+                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <FileText className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-medium text-slate-800 truncate">{file.name}</h3>
+                      <div className="flex items-center space-x-4 mt-1">
+                        <Badge variant="secondary" className="text-xs">
+                          {file.type}
+                        </Badge>
+                        <Badge className={`text-xs ${getStatusColor(file.status)}`}>
+                          {file.status}
+                        </Badge>
+                        <span className="text-xs text-slate-500">
+                          {file.size} • {new Date(file.uploadDate).toLocaleDateString()}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    {file.status === "analyzed" ? (
+                      <Link to={`/analysis/${file.id}`} state={{ file }}>
+                        <Button size="sm" className="h-8">
+                          View Details
+                        </Button>
+                      </Link>
+                    ) : (
+                      <Button size="sm" variant="outline" disabled className="h-8">
+                        <Clock className="w-4 h-4 mr-2" />
+                        Processing
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              ))}
+
+              {filteredDocuments.length === 0 && (
+                <div className="text-center py-12">
+                  <FileX className="w-16 h-16 mx-auto mb-4 text-slate-400" />
+                  <h3 className="text-lg font-medium text-slate-800 mb-2">No documents found</h3>
+                  <p className="text-slate-600 mb-4">
+                    {documents.length === 0
+                      ? "Upload your first document to get started"
+                      : "Try adjusting your search or filter criteria"}
+                  </p>
+                  {documents.length > 0 && (
+                    <Button onClick={clearFilters} variant="outline">
+                      Clear Filters
+                    </Button>
+                  )}
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   )

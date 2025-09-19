@@ -187,7 +187,7 @@ const uploadAndAnalyzeFile = async (file, fileId) => {
                 <Brain className="w-6 h-6 text-white" />
               </div>
             </motion.div>
-            <span className="text-2xl font-bold text-slate-800">LegalMind.AI</span>
+            <span className="text-2xl font-bold text-slate-800">KMRL Docs</span>
           </Link>
 
           <nav className="hidden md:flex items-center space-x-8">
