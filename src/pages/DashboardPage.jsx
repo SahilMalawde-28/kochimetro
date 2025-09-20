@@ -414,7 +414,7 @@ export default function DashboardPage() {
                       </div>
 
                       <div className="flex items-center space-x-2">
-                        {file.status === "analyzed" ? (
+                        {file.status === "completed" ? (
                           <Link to={`/analysis/${file.id}`} state={{ file }}>
                             <Button size="sm" className="h-8">
                               View Details
