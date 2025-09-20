@@ -24,7 +24,7 @@ function App() {
       <Route path="/upload" element={<UploadPage />} />
       <Route path="/analysis/:id" element={<AnalysisPage />} />
       <Route path="/dashboard" element={<DashboardPage />} />
-      <Route path="/compare" element={<ComparisonPage />} />
+      <Route path="/comparison" element={<ComparisonPage />} />
     </Routes>
   )
 }

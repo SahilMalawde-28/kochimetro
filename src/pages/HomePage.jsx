@@ -412,16 +412,15 @@ export default function HomePage() {
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-4xl font-bold text-white mb-6">Ready to Transform Your Legal Workflow?</h2>
+            <h2 className="text-4xl font-bold text-white mb-6">Ready to Simplify Metro Document Management?</h2>
             <p className="text-xl text-slate-300 mb-8 leading-relaxed">
-              Join thousands of freelancers, startups, and businesses who trust LegalMind.AI to simplify their legal
-              document management.
+              Join Kochi Metro staff who are already using AI to manage thousands of documents across departments.
             </p>
 
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link to="/signin">
                 <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3">
-                  Start Analyzing Documents
+                  Start Now
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
               </Link>
@@ -439,9 +438,11 @@ export default function HomePage() {
                 <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
                   <Brain className="w-5 h-5 text-white" />
                 </div>
-                <span className="text-xl font-bold text-slate-800">LegalMind.AI</span>
+                <span className="text-xl font-bold text-slate-800">Kochi Metro Docs</span>
               </div>
-              <p className="text-slate-600 mb-4">AI-powered legal document analysis for everyone.</p>
+              <p className="text-slate-600 mb-4">
+                AI-powered document hub to keep Kochi Metro running smoothly.
+              </p>
               <div className="flex space-x-4">
                 <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center">
                   <Building className="w-4 h-4 text-slate-600" />
@@ -454,8 +455,8 @@ export default function HomePage() {
                 title: "Product",
                 links: [
                   { name: "Features", href: "/features" },
-                  { name: "Pricing", href: "/pricing" },
-                  { name: "API", href: "/api" },
+                  { name: "Upload", href: "/upload" },
+                  { name: "Departments", href: "/departments" },
                   { name: "Integrations", href: "/integrations" },
                 ],
               },
@@ -463,7 +464,6 @@ export default function HomePage() {
                 title: "Resources",
                 links: [
                   { name: "Documentation", href: "/docs" },
-                  { name: "Blog", href: "/blog" },
                   { name: "Support", href: "/support" },
                   { name: "Community", href: "/community" },
                 ],
@@ -494,7 +494,7 @@ export default function HomePage() {
           </div>
 
           <div className="border-t mt-12 pt-8 text-center text-slate-600">
-            <p>&copy; 2024 LegalMind.AI. All rights reserved.</p>
+            <p>&copy; 2025 Kochi Metro Docs. All rights reserved.</p>
           </div>
         </div>
       </footer>

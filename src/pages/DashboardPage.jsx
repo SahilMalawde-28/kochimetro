@@ -7,43 +7,19 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../co
 import { Badge } from "../components/ui/badge"
 import { Input } from "../components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "../components/ui/dropdown-menu"
+
 import {
   FileText,
   Upload,
   Search,
   Filter,
-  MoreHorizontal,
   Clock,
   Calendar,
-  Users,
-  Home,
-  Edit3,
-  Eye,
-  Star,
-  Download,
-  ArrowRight,
-  GitCompare,
-  Trash2,
-  Edit,
-  Share2,
-  Archive,
-  Copy,
-  StarIcon,
-  X,
-  AlertCircle,
-  FileX,
   Briefcase,
-  Mail,
-  Share,
   Database,
+  X,
+  FileX,
+  GitCompare,
 } from "lucide-react"
 import { Link } from "react-router-dom"
 
@@ -375,7 +351,7 @@ export default function DashboardPage() {
                   <div>
                     <CardTitle>Recent Documents</CardTitle>
                     <CardDescription>
-                      Your uploaded Kochi Metro documents ({filteredDocuments.length} of {" "}
+                      Your uploaded Kochi Metro documents ({filteredDocuments.length} of{" "}
                       {documents.length})
                     </CardDescription>
                   </div>
@@ -414,6 +390,7 @@ export default function DashboardPage() {
                       </div>
 
                       <div className="flex items-center space-x-2">
+                        
                         {file.status === "completed" ? (
                           <Link to={`/analysis/${file.id}`} state={{ file }}>
                             <Button size="sm" className="h-8">
